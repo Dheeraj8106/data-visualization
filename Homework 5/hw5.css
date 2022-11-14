@@ -1,0 +1,54 @@
+body {
+    font-family: Calibri;
+}
+
+.TitleClass {
+    margin: 0 0 6rem 0;
+    text-align: center;
+}
+
+#NameId {
+    font-weight: bold;
+    font-size: 2rem;
+    color:#31087B;
+}
+
+.SvgClass {
+    text-align: center;
+    margin: 0 0 0 0px;
+}
+
+.xlabel {
+    fill:#aaa;
+    font-size:6pt;
+    text-anchor:middle;
+    opacity: 0.5;
+}
+
+.ylabel {
+    font-size: 5.5pt;
+    font-weight: bold;
+    text-anchor: start;
+}
+
+.bar {
+    fill:#1e99e7;
+    opacity: 0.7;
+    font-size:24pt;
+    font-weight:bold;
+    font-family: Calibri;
+}
+
+.map {
+    transform: translate(-3795.0188297448267px,-13939.583464627787px) scale(39.151717252068266);
+}
+
+.line {
+    stroke: #aaa;
+}
+
+.headingName{
+    font-weight: bold;
+    font-size: 1.2rem;
+    /*color:#31087B;*/
+}

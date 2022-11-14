@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="hw2-1.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <div class="main">
+    <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  </div>
+<script>
+  let width = 600;
+  let height = 400;
+  let values = [42.5, 82.5, 85, 94, 80];
+
+  // add svg element inside div
+  let svg = d3.select(".main").append("svg").attr("width", width).attr("height",height).style("display", "block").style("margin", "auto");
+
+  // add x-axis line
+  svg.append("line").attr("x1",10).attr("y1",height - 30).attr("x2",width + 200).attr("y2",height - 30).style("stroke","#aaa").style("stroke-width", "3").style("stroke-dasharray","5,5");
+
+  // add vertical line
+  for(let idx = 0; idx < 11; idx+=1){
+    svg.append("line").attr("x1",60 + (idx * 50)).attr("y1",40).attr("x2",60 + (idx * 50)).attr("y2",height-30).style("stroke","#aaa").style("stroke-width", "1");
+  }
+
+  //add vertical bars
+  svg.selectAll("rect").data(values).enter().append("rect").attr("x", 60).attr("y",(d,i) => (((height - 30) - ((i+1) * 60)))).attr("fill", "#1e99e7").style("opacity","0.7").attr("height", 50).attr("width", (d,i) => (d * 5));
+
+  //add x-axis text
+  for(let idx = 0; idx < 11; idx+=1) {
+    svg.append("text").attr("x", 60 + (idx * 50)).attr("y", height).attr("class", "xlabel").text((idx+1) * 10);
+  }
+
+  //add y-axis text
+  let ylabels = ['N', 'A', 'E', 'C', 'O'];
+  for(let idx = 0; idx < 5; idx+=1) {
+    svg.append("text").attr("x", 40 ).attr("y", ((height + 7 )- ((idx+1) * 60))).attr("class", "ylabel").text(ylabels[idx]);
+  }
+
+  //add bar percentage text
+  for(let idx = 0; idx < 5; idx += 1) {
+    svg.append("text").attr("x", 70 + (values[idx] * 5) ).attr("y", (height - ((idx+1) * 60) + 6)).attr("class", "bar").text(values[idx] + "%");
+  }
+
+</script>
+</body>
+</html>

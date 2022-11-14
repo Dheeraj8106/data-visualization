@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Area Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<!--  <link rel="stylesheet" href="hw3-3.css">-->
+</head>
+<body>
+<div class="main">
+  <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  <div class="btn-group" style="margin-left: 45%">
+    <button class = "btn btn-outline-primary" onclick="arr('High', '#1e99e7');">High</button>
+    <button class = "btn btn-outline-primary" onclick="arr('Low', '#FF731D');">Low</button>
+    <button class = "btn btn-outline-primary" onclick="arr('Open', '#1C6758');">Open</button>
+  </div>
+</div>
+
+<script>
+
+  function convertDate(date) {
+    return [
+      (date.getMonth() + 1).toString().padStart(2, '0'),
+      (date.getDate()).toString().padStart(2, '0'),
+      date.getFullYear().toString().padStart(2, '0'),
+    ].join('/');
+  }
+
+  var dataDict = {}, area, svg, xScale, yScale, finalDataArray = [0, 0 ,0, 0, 0, 0, 0 ,0, 0, 0, 0, 0, 0], finalDataArray2 = [], finalDataArray3 = [], width, height, flag = false, barColor;
+  const parseTime = d3.timeParse("%Y");
+
+  width = 1300;
+  height = 600;
+
+  // add svg element inside div
+  svg = d3.select(".main")
+          .append("svg")
+          .attr("width", width + 20)
+          .attr("height",height)
+          .style("display", "block")
+          .style("margin", "auto")
+          .attr("transform", "translate(0,0)");
+
+  var barG = svg.append("g");
+
+  let initializeLineChart = (finalDataArray) => {
+
+    barG.selectAll("rect")
+            .data(finalDataArray)
+            .join(
+                    function (enter){
+                      return enter.append("rect")
+                              .attr("class", "barChart")
+                              .attr("x", function (d,i) {
+                                return xScale(parseTime(d[0].getFullYear()));
+                              })
+                              .attr("y", function (d,i) {
+                                return yScale(d[1]);
+                              })
+                              .attr("fill", "#1e99e7").style("opacity","0.7")
+                              .attr("height", function (d,i) {
+                                  console.log("test1")
+                                return 480 - yScale(d[1]);
+                              })
+                              .attr("width", 60)
+
+                    },
+                    function(update) {
+                      // .select(".barChart")
+                      return update.transition().duration(500)
+                              .delay(function(d, i) {
+                                return i * 40;
+                              })
+                              .attr("y", function (d, i) {
+                                return yScale(d[1]);
+                              })
+                              .attr("height", function (d, i) {
+                                return 480 - yScale(d[1])
+                              })
+                              .attr("fill", function (){
+                                return barColor
+                              })
+                    },
+                    function (exit){
+                      console.log(exit);
+                      return exit.remove();
+                    }
+            )
+            .attr("transform", "translate(50, 10)");
+  }
+
+  function prepareFinalArray(data, area, array) {
+    var arrIdx = 0;
+    var idx = 0;
+    while (idx < data.length) {
+      var highValue = 0;
+      var i = idx;
+      var startDate = new Date(data[i].Date);
+      var initialYear = startDate.getFullYear();
+      while (data[i] != undefined && initialYear == new Date(data[i].Date).getFullYear() && i < data.length) {
+        highValue = data[i][area];
+        i++;
+      }
+      array[arrIdx] = [startDate, highValue];
+      arrIdx += 1;
+      idx = i;
+    }
+  }
+
+  function drawAreaChart(finalDataArray){
+    var finalMaxDate = finalDataArray[finalDataArray.length - 1][0];
+    var finalMinDate = finalDataArray[0][0];
+
+    xScale = getScale([parseTime(finalMinDate.getFullYear()), parseTime(finalMaxDate.getFullYear())], [0, width - 100], "scaleTime");
+    yScale = getScale([0, 450], [height - 120, 0], "scaleLinear");
+
+    let xAxis = d3.axisBottom(xScale)
+            .tickSize(5)
+            .tickPadding(15)
+
+    let yAxis = d3.axisLeft(yScale)
+            .tickSize(5)
+            .tickPadding(15)
+            .tickValues([0, 50, 100, 150, 200, 250, 300, 350, 400, 450])
+
+
+    function getScale(domainValues, rangeValues, scaleType){
+      if(scaleType == "scaleLinear"){
+        return d3.scaleLinear()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+      else if(scaleType == "scaleTime"){
+        return d3.scaleTime()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+    }
+
+    function draw(axis, stroke_width, translate, cls){
+      svg.append("g")
+              .call(axis).attr("transform", translate)
+              .style("stroke-width", stroke_width)
+              .attr("class", cls);
+    }
+
+    svg.append("text").attr("x",1200).attr("y",height - 800).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("X-axis --> Start and end dates");
+    svg.append("text").attr("x",1200).attr("y",height - 750).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("Y-axis --> Maximum value of COVID19 cases");
+
+    draw(xAxis, "2",  `translate(80, ${height - 110})`, "xlabel", "scaleTime");
+    draw(yAxis, "2",`translate(50, 10)`, "xlabel", "scaleLinear");
+
+    initializeLineChart(finalDataArray);
+
+  }
+
+  function arr(area, color){
+    barColor = color
+    d3.csv("Tesla.csv").then(function(data){
+      let arr = prepareFinalArray(data, area, finalDataArray);
+      if(!flag){
+        drawAreaChart(finalDataArray);
+        flag = true;
+      }
+      else{
+        initializeLineChart(finalDataArray);
+      }
+    });
+  }
+  arr("High", '#1e99e7');
+</script>
+</body>
+</html>

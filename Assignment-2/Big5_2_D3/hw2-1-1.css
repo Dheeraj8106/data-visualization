@@ -1,0 +1,28 @@
+body{
+  background-color: #FAFAFA;
+  margin: 0;
+  font-family: 'Asap', sans-serif;
+}
+
+.main{
+  margin: 0;
+}
+.TitleClass {
+  margin: 0 0 0 0;
+  text-align: center;
+}
+
+#NameId{
+  font-family: 'Asap', sans-serif;
+  color: #25316D;
+}
+
+.HorizontalLine{
+  text-anchor: end;
+}
+
+.bar{
+  opacity: 0.8;
+  font-size:12pt;
+  text-anchor:middle;
+}

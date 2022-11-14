@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Line Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="hw2-4.css">
+</head>
+<body>
+  <div class="main">
+    <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  </div>
+<script>
+  d3.csv("top_20_CA_wildfires.csv").then(function(data){
+    var dataArray = [];
+
+    var idx = 0;
+    while(idx < data.length){
+      var maxValue = 0;
+      var year = data[idx].year;
+      var acres = data[idx].acres;
+
+      dataArray.push([year, acres]);
+      idx++;
+    }
+
+    console.log(dataArray);
+
+    let width = 1200;
+    let height = 900;
+    let svg = d3.select(".main").append("svg").attr("width", width).attr("height",height).style("display", "block").style("margin", "auto");
+
+    // add x-axis line
+    svg.append("line").attr("x1",70).attr("y1",height - 80).attr("x2",width + 200).attr("y2",height - 80).style("stroke","#aaa").style("stroke-width", "3");
+    svg.append("text").attr("x",900).attr("y",height - 800).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("X-axis --> Year");
+    svg.append("text").attr("x",900).attr("y",height - 770).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("Y-axis --> The number of acres burned");
+
+    // add y-axis line
+    svg.append("line").attr("x1",70).attr("y1",height - 80).attr("x2", 70).attr("y2", 10).style("stroke","#aaa").style("stroke-width", "3");
+
+    // add y-axis text
+    for(let idx = 0; idx < 10; idx += 1) {
+      svg.append("text").attr("x", 3).attr("y",(height - 75 - 85) - (idx * 85)).attr("class", "ylabel").text((idx+1) * 50000);
+    }
+
+    // add x-axis text
+    let xlabels = ['1970', '1980', '1990', '2000', '2010', '2020'];
+    for(let idx = 0; idx < xlabels.length; idx+=1) {
+      svg.append("text").attr("x", 52 + ((idx * 1) * 170)).attr("y", height - 50).attr("class", "xlabel").text(xlabels[idx]);
+    }
+
+    // plot points on graph
+    var prevPoints = [70,height - 80];
+    for(var idx = 0;idx < dataArray.length; idx++){
+      var currY = (height - 80 ) - (dataArray[idx][1] * 0.0017);
+      var currX = 70 + (parseInt(dataArray[idx][0]) - 1970) * 17;
+      svg.append("circle").attr("cy",  currY).attr("cx", currX).attr("r", 3);
+    }
+
+    // add small line on y axis
+    for(var idx = 0; idx < 95; idx++){
+      svg.append("line").attr("y2",  (height - 80 - 8.5) - (idx * 8.5)).attr("x2", 70).attr("y1",  (height - 80 - 8.5) - (idx * 8.5)).attr("x1", 60).style("stroke-width", "2").style("stroke","#aaa");
+    }
+
+  });
+</script>
+</body>
+</html>

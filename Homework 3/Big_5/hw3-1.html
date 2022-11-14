@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bar chart</title>
+  <link rel="stylesheet" href="hw3-1.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+<div class="main">
+  <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+</div>
+<script>
+  let width = 600;
+  let height = 400;
+  let values = [42.5, 82.5, 85, 94, 80];
+
+  let barData = [ { yLabel:"N", value: 42.5 }, { yLabel:"A", value: 82.5 }, { yLabel:"E", value: 85 }, { yLabel:"C", value: 94 }, { yLabel:"O", value: 80} ];
+
+  let barScale = d3.scaleBand()
+          .domain(["O", "C", "E", "A", "N"])
+          .range([50, height - 40])
+          .paddingInner("0.16")
+
+  let xAxis = d3.axisBottom(getScale([0, 100], [10, width - 40]))
+          .tickSize(0)
+          .tickPadding(15)
+
+  let xAxisTop = d3.axisBottom(getScale([0, 100], [10, width - 40]))
+          .tickSize(0)
+          .tickValues([])
+
+  let yAxisVertical = d3.axisLeft(getScale([0, 100], [0, height - 70]))
+          .tickSize(0)
+          .tickValues([])
+
+  function getScale(domainValues, rangeValues){
+    return d3.scaleLinear()
+            .domain(domainValues)
+            .range(rangeValues)
+  }
+
+  function draw(axis, stroke_dasharray, stroke_width, translate, cls){
+    svg.append("g")
+            .call(axis).attr("transform", translate)
+            .style("stroke-dasharray", stroke_dasharray)
+            .style("stroke-width", stroke_width)
+            .attr("class", cls);
+  }
+
+  // add svg element inside div
+  let svg = d3.select(".main")
+          .append("svg")
+          .attr("width", width + 20)
+          .attr("height",height)
+          .style("display", "block")
+          .style("margin", "auto")
+          .attr("transform", "translate(0,50)");
+
+
+  draw(xAxisTop, "4,4", "2",  "translate(25,40)", "xlabel");
+  draw(xAxis, "4,4", "2","translate(25,370)", "xlabel");
+  for(var idx = 0; idx <= 10; idx++){
+    draw(yAxisVertical, "0", "0.5",`translate(${35 + (idx * 55)},40)`, "line");
+  }
+
+
+  //add vertical bars
+  let barG = svg.append("g");
+  barG.selectAll("rect")
+          .data(barData)
+          .join(
+                  function (enter){
+                    return enter.append("rect")
+                            .attr("x", 60)
+                            .attr("y",(d,i) => (barScale(d.yLabel)))
+                            .attr("fill", "#1e99e7").style("opacity","0.7")
+                            .attr("height", barScale.bandwidth())
+                            .attr("width", (d,i) => ((d.value + (d.value / 10)) * 5));
+                  }
+          )
+          .attr("transform", "translate(-25, 0)")
+          .on("mouseover", function (d, i) {
+            d3.select(this).transition().duration(100).style("fill", "#FF731D").style("stroke", "black").style("stroke-width", "3");
+            d3.select("#bar" + i.yLabel).style("fill", "black")
+          })
+          .on("mouseout", function (d, i) {
+            d3.select(this).transition().duration(100).style("fill", "#1e99e7").style("stroke", "#1e99e7");
+            d3.select("#bar" + i.yLabel).style("fill", "#1e99e7")
+          });
+
+  let yLabels = svg.append("g")
+  yLabels.selectAll("text")
+          .data(barData)
+          .join(
+                  function (enter){
+                    return enter.append("text")
+                            .attr("x",40)
+                            .attr("y",(d,i) => (barScale(d.yLabel)))
+                            .attr("class", "ylabel")
+                            .text(d => d.yLabel)
+                  }
+          )
+          .attr("transform", "translate(-17, 40)")
+
+  let yLabels1 = svg.append("g")
+  yLabels1.selectAll("text")
+          .data(barData)
+          .join(
+                  function (enter){
+                    return enter.append("text")
+                            .attr("x",(d, i) => (d.value + (d.value / 10) + 12) * 5)
+                            .attr("y",(d,i) => (barScale(d.yLabel)))
+                            .attr("class", "bar")
+                            .attr("id", function (d, i){
+                              return "bar" + d.yLabel;
+                             })
+                            .text(d => d.value + "%")
+                  }
+          )
+          .attr("transform", "translate(-17, 40)")
+
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Area Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="hw3-3.css">
+</head>
+<body>
+  <div class="main">
+    <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  </div>
+<script>
+
+
+  function convertDate(date) {
+    return [
+      (date.getMonth() + 1).toString().padStart(2, '0'),
+      (date.getDate()).toString().padStart(2, '0'),
+      date.getFullYear().toString().padStart(2, '0'),
+    ].join('/');
+  }
+
+  var dataDict = {}, area, svg, xScale, yScale;
+
+  let initializaLineChart = (finalDataArray) => {
+
+    let areaG = svg.append("g");
+    areaG.selectAll("path")
+            .data([finalDataArray])
+            .join(
+                    function (enter){
+                      return enter.append("path")
+                              .attr("d", area)
+                              .attr("class", "area");
+                    },
+                    function(update){
+                      return update.select(".area").attr("d", area);
+                    },
+                    function (exit){
+                      return exit.remove();
+                    }
+            )
+            .style("fill", "#FEC260")
+            .style("stroke", "black")
+            .attr("transform", "translate(35, 10)")
+            .on("mouseover", function (d, i) {
+              d3.select(this).transition().duration(500).attr("stroke-width", 4).style("fill", "#B4CDE6").style("stroke", "#5F9DF7").style("opacity", "0.8");
+              d3.selectAll(".pointCircle").transition().duration(500).attr("r", 5)
+            })
+            .on("mouseout", function () {
+              d3.select(this).transition().duration(500).attr("stroke-width", 1).style("fill", "#FEC260").style("stroke", "#FF731D");
+              d3.selectAll(".pointCircle").transition().duration(500).attr("r", 3)
+            })
+
+    let circlePlot = svg.append("g").attr("transform", "translate(35, 10)");
+
+    // plot points on graph
+    for(var idx = 0;idx < finalDataArray.length; idx++){
+      var currX = xScale(finalDataArray[idx][0][0]);
+      var currY = yScale(finalDataArray[idx][1]);
+      circlePlot.append("circle")
+              .attr("cy",  currY)
+              .attr("cx", currX)
+              .attr("r", 3)
+              .attr("class", "pointCircle")
+              .on("mouseover", function (d, i) {
+                d3.select(this).attr("r", 7);
+              })
+              .on("mouseout", function () {
+                d3.select(this).attr("r", 3);
+              });
+    }
+
+  }
+
+  d3.csv("COVID-Utah.csv").then(function(data){
+
+    const parseTime = d3.timeParse("%Y");
+
+    data = data.reverse();
+    let finalDataArray = [];
+
+    var idx = 0;
+    while(idx < data.length) {
+      var maxValue = 0;
+      var i = idx;
+      var startDate = new Date(data[i].Date);
+      while(i < (idx + 7) && i < data.length) {
+        maxValue = Math.max(parseInt(data[i]['New cases']), maxValue);
+        i++;
+      }
+      var endDate = new Date(data[i-1].Date);
+
+      finalDataArray.push([[startDate,endDate], maxValue]);
+      idx = i;
+    }
+
+    var finalMaxDate = finalDataArray[finalDataArray.length - 1][0][1];
+    var finalMinDate = finalDataArray[0][0][0];
+
+    let width = 1900;
+    let height = 980;
+
+    xScale = getScale([new Date(2020, 2, 7), new Date(2021, 2, 7)], [10, width - 80], "scaleTime");
+    yScale = getScale([0, 1000], [height - 130, 0], "scaleLinear");
+
+    let xAxis = d3.axisBottom(xScale)
+            .tickSize(5)
+            .tickPadding(15)
+            .tickValues([])
+
+    let yAxis = d3.axisLeft(yScale)
+            .tickSize(5)
+            .tickPadding(15)
+
+    area = d3.area()
+            .x(function(d) {
+              return xScale(d[0][0]);
+            })
+            .y0(850)
+            .y1(function(d) {
+              return yScale(d[1]);
+            })
+
+    function getScale(domainValues, rangeValues, scaleType){
+      if(scaleType == "scaleLinear"){
+        return d3.scaleLinear()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+      else if(scaleType == "scaleTime"){
+        return d3.scaleTime()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+    }
+
+    function draw(axis, stroke_width, translate, cls){
+      svg.append("g")
+              .call(axis).attr("transform", translate)
+              .style("stroke-width", stroke_width)
+              .attr("class", cls);
+    }
+
+    // add svg element inside div
+    svg = d3.select(".main")
+            .append("svg")
+            .attr("width", width + 20)
+            .attr("height",height)
+            .style("display", "block")
+            .style("margin", "auto")
+            .attr("transform", "translate(0,50)");
+
+    svg.append("text").attr("x",1200).attr("y",height - 800).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("X-axis --> Start and end dates");
+    svg.append("text").attr("x",1200).attr("y",height - 750).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("Y-axis --> Maximum value of COVID19 cases");
+
+    // add x-axis text
+    for(let idx = 0; idx < finalDataArray.length; idx+=1) {
+      svg.append("text").attr("x", 28 + ((idx * 1) * 34.8)).attr("y", height - 90).attr("class", "xlabel").attr("transform", `rotate(30, ${50 + ((idx * 1) * 34.8)}, ${height - 70} )`).text((convertDate(finalDataArray[idx][0][0]) + " - " + convertDate(finalDataArray[idx][0][1])));
+    }
+
+    draw(xAxis, "2",  `translate(35, ${height - 120})`, "xlabel", "scaleTime");
+    draw(yAxis, "2",`translate(45,10)`, "xlabel", "scaleLinear");
+
+    initializaLineChart(finalDataArray);
+
+  });
+</script>
+</body>
+</html>

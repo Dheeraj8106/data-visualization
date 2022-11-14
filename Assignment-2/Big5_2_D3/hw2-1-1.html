@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Asap:wght@500&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rampart+One&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="hw2-1-1.css" >
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+<body>
+<div class="main">
+    <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  <script>
+    let width = 1100;
+    let height = 1000;
+
+    function drawChart(xAxisValues, chartHeights, chartColor, chartName){
+      d3.select('.main').append("div").attr("class", "TitleClass").append("h1").append("span").style("text-align","center").style("font-size", "1.8rem").style("font-family", "'Rampart One', cursive").text(chartName)
+
+      let svg = d3.select(".main").append("svg").attr("width", width).attr("height",height).style("display", "block").style("margin", "auto");
+
+      let arrValue = ["20", "18", "16", "14", "12", "10", "8", "6", "4", "2", "0"];
+
+      let g1 = svg.append("g").attr("class", "HorizontalLine").attr("transform", "translate(50,150)");
+
+      for(var idx = 0;idx < arrValue.length; idx++){
+        let g2 = g1.append("g").attr("transform", `translate(0,${50 * idx})`).style("opacity","1");
+        // add x-axis line
+        g2.append("line").attr("x1",50).attr("y1",20).attr("x2", 1000).attr("y2", 20).style("stroke","#D3D3D3").style("stroke-width", "1");
+        g2.append("text").attr("x", 24).attr("y",20).text(arrValue[idx]);
+      }
+
+      let g3 = g1.append("g").attr("transform", "translate(0,500)").style("opacity","1");
+      g3.append("line").attr("x1",50).attr("y1",20).attr("x2", 1000).attr("y2", 20).style("stroke","#D3D3D3").style("stroke-width", "2");
+
+      for(var idx = 0; idx < 7; idx++){
+        let g4 = g3.append("g").attr("transform", `translate(${158.3 * idx}, 0)`).style("opacity","1");
+        // add x-axis line
+        g4.append("line").attr("x1",51).attr("y1",20).attr("x2", 50).attr("y2", 30).style("stroke","#D3D3D3").style("stroke-width", "2");
+      }
+
+      let g5 = g1.append("g").attr("transform", "translate(0, 120)");
+
+      for(var idx = 0; idx < 6; idx++){
+        let g6 = g5.append("g").attr("transform", `translate(${20 + (idx * 158.3)}, 0)`).attr("class","bar");
+        // add x-axis line
+        g6.append("rect").attr("x", 46).attr("y", `${400 - chartHeights[idx]}`).attr("width", 120).attr("height", chartHeights[idx]).attr("fill", `${chartColor[idx]}`);
+        g6.append("text").attr("x", 110).attr("y", 430).text(xAxisValues[idx]);
+        g6.append("text").attr("x", 110).attr("y", 320).attr("width", 50).attr("height", 175).attr("fill", "#3F9FFB");
+      }
+    }
+
+    var chart1Heights = [175, 175, 100, 325, 275, 225];
+    var chartName = ["Neuroticism", "Extraversion", "Openness To Experience", "Agreeableness", "Conscientiousness"]
+
+    var chart1 = ["Anxiety", "Anger", "Depression", "Self-Consciousness", "Immoderation", "Vulnerability"];
+    var chartColor = ["#3F9FFB", "#4FE6A5","#FDBC49","#FF6477", "#8B74D6", "#3F9FFB"]
+    drawChart(chart1, chart1Heights,  chartColor, chartName[0]);
+
+    var chart1 = ["Friendliness", "Gregariousness", "Assertiveness", "Activity Level", "Excitement-Seeking", "Cheerfulness"];
+    var chart1Heights = [500, 450, 375, 425, 300, 500];
+    drawChart(chart1, chart1Heights,  chartColor, chartName[1]);
+
+    var chart1 = ["Imagination", "Artistic Interests", "Emotionality" ,"Adventurousness", "Intellect" ,"Liberalism"];
+    var chart1Heights = [250, 425, 375, 425, 400, 450];
+    drawChart(chart1, chart1Heights,  chartColor, chartName[2]);
+
+    var chart1 = ["Trust", "Morality","Altruism", "Cooperation","Modesty","Sympath"];
+    var chart1Heights = [450, 500, 475, 300, 300, 450];
+    drawChart(chart1, chart1Heights,  chartColor, chartName[3]);
+
+    var chart1 = ["Self-Efficacy", "Orderliness", "Dutifulness", "Achievement-Striving", "Self-Discipline", "Cautiousness"];
+    var chart1Heights = [500, 475, 500, 400, 500, 450];
+    drawChart(chart1, chart1Heights,  chartColor, chartName[4]);
+
+  </script>
+</div>
+</body>
+</html>

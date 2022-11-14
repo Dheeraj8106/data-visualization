@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Line Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="hw2-3.css">
+</head>
+<body>
+<div class="main">
+  <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+</div>
+<script>
+
+  function padTo2Digits(num) {
+    return num.toString().padStart(2, '0');
+  }
+
+  function formatDate(date) {
+    return [
+      padTo2Digits(date.getMonth() + 1),
+      padTo2Digits(date.getDate()),
+      date.getFullYear(),
+    ].join('/');
+  }
+
+  d3.csv("COVID-Utah.csv").then(function(data){
+    var dataArray = [];
+
+    var idx = 0;
+    while(idx < data.length){
+      var maxValue = 0;
+      var i = idx;
+      var startDate = formatDate(new Date(data[i].Date));
+      while(i < (idx + 7) && i < data.length) {
+        maxValue = Math.max(parseInt(data[i]['New cases']), maxValue);
+        i++;
+      }
+      var endDate = formatDate(new Date(data[i-1].Date));
+
+      dataArray.push([[startDate, endDate], maxValue]);
+      idx = i;
+    }
+
+    console.log(dataArray);
+    let width = 1800;
+    let height = 930;
+    let svg = d3.select(".main").append("svg").attr("width", width).attr("height",height).style("display", "block").style("margin", "auto");
+
+    // add x-axis line
+    svg.append("line").attr("x1",50).attr("y1",height - 80).attr("x2",width + 200).attr("y2",height - 80).style("stroke","#aaa").style("stroke-width", "3");
+    svg.append("text").attr("x",1200).attr("y",height - 800).style("stroke","black").style("stroke-width", "1").style("font-size", "25px").text("X-axis --> Start and end dates");
+    svg.append("text").attr("x",1200).attr("y",height - 770).style("stroke","black").style("stroke-width", "1").style("font-size", "25px").text("Y-axis --> Maximum value of COVID19 cases");
+
+    // add y-axis line
+    svg.append("line").attr("x1",50).attr("y1",height - 80).attr("x2", 50).attr("y2", 2).style("stroke","#aaa").style("stroke-width", "3");
+
+    // add y-axis text
+    for(let idx = 0; idx < 9; idx += 1) {
+      svg.append("text").attr("x", 5).attr("y",(height - 75 - 85) - (idx * 85)).attr("class", "ylabel").text((idx+1) * 100);
+    }
+
+    // add x-axis text
+    for(let idx = 0; idx < dataArray.length; idx+=1) {
+      svg.append("text").attr("x", 50 + ((idx * 1) * 32)).attr("y", height - 55).attr("class", "xlabel").attr("transform", `rotate(30, ${50 + ((idx * 1) * 32)}, ${height - 70} )`).text((dataArray[idx][0][0] + " - " + dataArray[idx][0][1]));
+    }
+
+    // add small line on y axis
+    for(var idx = 0; idx < 110; idx++){
+      svg.append("line").attr("y2",  (height - 80 - 8.5) - (idx * 8.5)).attr("x2", 50).attr("y1",  (height - 80 - 8.5) - (idx * 8.5)).attr("x1", 40).style("stroke-width", "2").style("stroke","#aaa");
+    }
+
+    // plot points on graph using polygon
+    var points = `50, ${height-80} `;
+    var idx = 0;
+    for(var value in dataArray){
+      var currY = (height - 80 ) - (dataArray[value][1] * 0.85);
+      var currX = 50 + (idx * 32);
+      svg.append("circle").attr("cy",  currY).attr("cx", currX).attr("r", 3);
+      points += currX + "," + currY + " ";
+      idx++;
+    }
+    svg.append("polygon").attr("points", points).style("stroke-width", "2").style("stroke","#aaa").style("fill","#FEC260");
+  });
+</script>
+</body>
+</html>

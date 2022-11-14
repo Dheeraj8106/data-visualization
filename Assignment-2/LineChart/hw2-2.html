@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Line Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="hw2-2.css">
+</head>
+<body>
+  <div class="main">
+    <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  </div>
+<script>
+  d3.csv("realdonaldtrump.csv").then(function(data){
+    console.log(data);
+    var dataDict = {};
+
+    for(let idx = 0; idx < data.length; idx++){
+      var year = new Date(data[idx].date).getFullYear();
+      if(year in dataDict){
+        dataDict[year] += 1;
+      }
+      else{
+        dataDict[year] = 1;
+      }
+    }
+
+    delete dataDict["2009"];
+
+
+    let width = 1300;
+    let height = 900;
+    let svg = d3.select(".main").append("svg").attr("width", width).attr("height",height).style("display", "block").style("margin", "auto");
+
+    // add x-axis line
+    svg.append("line").attr("x1",50).attr("y1",height - 80).attr("x2",width + 200).attr("y2",height - 80).style("stroke","#aaa").style("stroke-width", "3");
+    svg.append("text").attr("x",800).attr("y",height - 800).style("stroke","black").style("stroke-width", "1").style("font-size", "25px").text("X-axis --> Year");
+    svg.append("text").attr("x",800).attr("y",height - 770).style("stroke","black").style("stroke-width", "1").style("font-size", "25px").text("Y-axis --> Maximum value of the tweets");
+
+    // add y-axis line
+    svg.append("line").attr("x1",50).attr("y1",height - 80).attr("x2", 50).attr("y2", 10).style("stroke","#aaa").style("stroke-width", "3");
+
+    // add y-axis text
+    for(let idx = 0; idx < 9; idx += 1) {
+      svg.append("text").attr("x", 5).attr("y",(height - 75 - 85) - (idx * 85)).attr("class", "ylabel").text((idx+1) * 1000);
+    }
+
+    // add x-axis text
+    let xlabels = ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020'];
+    for(let idx = 0; idx < xlabels.length; idx+=1) {
+      svg.append("text").attr("x", 32 + ((idx * 1) * 85)).attr("y", height - 50).attr("class", "xlabel").text(xlabels[idx]);
+    }
+
+    // plot points on graph
+    var prevPoints = [50,height - 80];
+    for(var value in dataDict){
+      var currY = (height - 80 ) - (dataDict[value] * 0.085);
+      var currX = 50 + (value - 2010) * 85;
+      svg.append("circle").attr("cy",  currY).attr("cx", currX).attr("r", 3);
+      svg.append("line").attr("x1", prevPoints[0]).attr("y1",prevPoints[1]).attr("y2",  currY).attr("x2", currX ).style("stroke-width", "2").style("stroke","#aaa");
+      prevPoints[0] = currX;
+      prevPoints[1] = currY;
+    }
+
+    // add small line on y axis
+    for(var idx = 0; idx < 90; idx++){
+      svg.append("line").attr("y2",  (height - 80 - 8.5) - (idx * 8.5)).attr("x2", 50).attr("y1",  (height - 80 - 8.5) - (idx * 8.5)).attr("x1", 40).style("stroke-width", "2").style("stroke","#aaa");
+    }
+
+  });
+</script>
+</body>
+</html>

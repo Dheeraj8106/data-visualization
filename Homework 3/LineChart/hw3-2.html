@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Line Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="hw3-2.css">
+</head>
+<body>
+  <div class="main">
+    <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  </div>
+<script>
+
+  var dataDict = {}, line, svg;
+
+  let initializaLineChart = (finalDataArray) => {
+    let lineG = svg.append("g");
+    lineG.selectAll("path")
+            .data([finalDataArray])
+            .join(
+                    function (enter){
+                      return enter.append("path")
+                              .attr("d", line)
+                              .attr("class", "lines");
+                    },
+                    function(update){
+                      return update.select(".lines").attr("d", line);
+                    },
+                    function (exit){
+                      return exit.remove();
+                    }
+            )
+            .style("fill", "none")
+            .style("stroke", "black")
+            // .style("stroke-width", "2")
+            .attr("transform", "translate(35, 10)")
+            .on("mouseover", function (d, i) {
+              d3.select(this).attr("stroke-width", 5).style("stroke", "#FF731D");
+              d3.selectAll(".pointCircle").attr("r", 6).style("fill", "#1746A2")
+            })
+            .on("mouseout", function () {
+              d3.select(this).attr("stroke-width", 1).style("stroke", "black");
+              d3.selectAll(".pointCircle").attr("r", 3).style("fill", "black")
+            });
+  }
+
+  d3.csv("realdonaldtrump.csv").then(function(data){
+
+    const parseTime = d3.timeParse("%Y");
+
+    for(let idx = 0; idx < data.length; idx++){
+      var year = new Date(data[idx].date).getFullYear();
+      if(year in dataDict){
+        dataDict[year] += 1;
+      }
+      else{
+        dataDict[year] = 1;
+      }
+    }
+
+    delete dataDict["2009"];
+
+    var finalDataArray = [];
+    for(key in dataDict){
+      finalDataArray.push({'key': key, 'value': dataDict[key]})
+    }
+
+    let minDate = Math.min.apply(Math, Object.keys(dataDict))
+    let maxDate = Math.max.apply(Math, Object.keys(dataDict))
+
+    let width = 1300;
+    let height = 900;
+
+    let xScale = getScale([parseTime(minDate), parseTime(maxDate)], [10, width - 40], "scaleTime");
+    let yScale = getScale([0, 9000], [height - 70, 0], "scaleLinear");
+
+    let xAxis = d3.axisBottom(xScale)
+            .tickSize(5)
+            .tickPadding(15)
+
+    let yAxis = d3.axisLeft(yScale)
+            .tickSize(5)
+            .tickPadding(15)
+            .tickValues([0,500,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500,7000,7500,8000,8500,9000])
+
+    line = d3.line()
+            .x(function(d) {
+              return xScale(parseTime(d.key));
+            })
+            .y(function(d) {
+              return yScale(d.value);
+            });
+
+    function getScale(domainValues, rangeValues, scaleType){
+      if(scaleType == "scaleLinear"){
+        return d3.scaleLinear()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+      else if(scaleType == "scaleTime"){
+        return d3.scaleTime()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+    }
+
+    function draw(axis, stroke_width, translate, cls){
+      svg.append("g")
+              .call(axis).attr("transform", translate)
+              .style("stroke-width", stroke_width)
+              .attr("class", cls);
+    }
+
+    // add svg element inside div
+    svg = d3.select(".main")
+            .append("svg")
+            .attr("width", width + 20)
+            .attr("height",height)
+            .style("display", "block")
+            .style("margin", "auto")
+            .attr("transform", "translate(0,50)");
+
+    svg.append("text").attr("x",800).attr("y",height - 800).style("stroke","black").style("stroke-width", "1").style("font-size", "25px").text("X-axis --> Year");
+    svg.append("text").attr("x",800).attr("y",height - 770).style("stroke","black").style("stroke-width", "1").style("font-size", "25px").text("Y-axis --> Maximum value of the tweets");
+
+    draw(xAxis, "2",  `translate(35, ${height - 60})`, "xlabel", "scaleTime");
+    draw(yAxis, "2",`translate(45,10)`, "xlabel", "scaleLinear");
+
+    initializaLineChart(finalDataArray);
+
+    let circlePlot = svg.append("g")
+    // plot points on graph
+    for(var idx = 0;idx < finalDataArray.length; idx++){
+      var currY = yScale(finalDataArray[idx].value);
+      var currX = xScale(parseTime(finalDataArray[idx].key));
+      svg.append("circle")
+              .attr("class",  "pointCircle")
+              .attr("cy",  currY).attr("cx", currX)
+              .attr("r", 3)
+              .attr("transform", "translate(35, 10)")
+              .on("mouseover", function (d, i) {
+                d3.select(this).attr("r", 7).style("fill", "#1746A2");
+              })
+              .on("mouseout", function () {
+                  d3.select(this).attr("r", 3).style("fill", "black");
+              });
+    }
+
+
+  });
+</script>
+</body>
+</html>

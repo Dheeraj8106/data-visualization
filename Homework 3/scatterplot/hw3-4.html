@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scatterplot</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="hw3-4.css">
+</head>
+<body>
+  <div class="main">
+    <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span style="font-size: 1.2rem">CS-5820 Homework 2, A02394047@usu.edu, A02394047.</span></h1></div>
+  </div>
+<script>
+
+  var finalDataArray, svg, xScale, yScale;
+  const parseTime = d3.timeParse("%Y");
+
+  let initializaLineChart = (finalDataArray) => {
+    let circlePlot = svg.append("g");
+    circlePlot.selectAll("circle")
+            .data(finalDataArray)
+            .join(
+                    function (enter){
+                      return enter.append("circle")
+                              .attr("cy",  function (d, i){
+                                return yScale(d.value);
+                              })
+                              .attr("cx", function (d,i){
+                                return xScale(parseTime(d.key));
+                              })
+                              .attr("r", 1)
+                              .attr("class", "circle");
+                    },
+                    function(update){
+                      var currY = yScale(finalDataArray[1]);
+                      var currX = xScale(parseTime(finalDataArray[0]));
+                      return update.select(".circle")
+                              .attr("cy",  function (d, i){
+                                return yScale(d.value);
+                              })
+                              .attr("cx", function (d,i){
+                                return xScale(parseTime(d.key));
+                              })
+                              .attr("r", 1)
+                    },
+                    function (exit){
+                      return exit.remove();
+                    }
+            )
+            .style("stroke", "black")
+            .style("stroke-width", "3")
+            .attr("transform", "translate(60, 10)")
+            .on("mouseover", function (d, i) {
+              d3.select(this).transition().duration(200).attr("r", 7).style("fill", "#B4CDE6");
+            })
+            .on("mouseout", function () {
+              d3.select(this).transition().duration(200).attr("r", 1).style("fill", "black");
+            });
+  }
+
+  d3.csv("top_20_CA_wildfires.csv").then(function(data){
+
+    var finalDataArray = [];
+
+    var idx = 0;
+    while(idx < data.length){
+      var year = data[idx].year;
+      var acres = data[idx].acres;
+      finalDataArray.push({'key': year, 'value': acres});
+      idx++;
+    }
+    console.log(finalDataArray)
+
+    let width = 1300;
+    let height = 900;
+
+    xScale = getScale([parseTime('1970'), parseTime('2020')], [10, width - 90], "scaleTime");
+    yScale = getScale([0, 450000], [height - 70, 0], "scaleLinear");
+
+    let xAxis = d3.axisBottom(xScale)
+            .tickSize(5)
+            .tickPadding(15)
+
+    let yAxis = d3.axisLeft(yScale)
+            .tickSize(5)
+            .tickPadding(15)
+            .tickValues([0,50000,100000,150000,200000,250000,300000,350000,400000,450000,500000,550000,650000,700000,750000,800000,850000,900000])
+
+    function getScale(domainValues, rangeValues, scaleType){
+      if(scaleType == "scaleLinear"){
+        return d3.scaleLinear()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+      else if(scaleType == "scaleTime"){
+        return d3.scaleTime()
+                .domain(domainValues)
+                .range(rangeValues)
+      }
+    }
+
+    function draw(axis, stroke_width, translate, cls){
+      svg.append("g")
+              .call(axis).attr("transform", translate)
+              .style("stroke-width", stroke_width)
+              .attr("class", cls);
+    }
+
+    // add svg element inside div
+    svg = d3.select(".main")
+            .append("svg")
+            .attr("width", width + 20)
+            .attr("height",height)
+            .style("display", "block")
+            .style("margin", "auto")
+            .attr("transform", "translate(0,50)");
+
+    svg.append("text").attr("x",900).attr("y",height - 800).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("X-axis --> Year");
+    svg.append("text").attr("x",900).attr("y",height - 770).style("stroke","black").style("stroke-width", "1").style("font-size", "15px").text("Y-axis --> The number of acres burned");
+
+    draw(xAxis, "2",  `translate(60, ${height - 60})`, "xlabel", "scaleTime");
+    draw(yAxis, "2",`translate(70,10)`, "xlabel", "scaleLinear");
+
+    initializaLineChart(finalDataArray);
+
+
+  });
+</script>
+</body>
+</html>

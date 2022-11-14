@@ -1,0 +1,46 @@
+body{
+  background-color: #edf1f4;
+}
+.bar {
+  fill: #fff;
+  box-radius:20px;
+  box-shadow: 15px 15px 20px rgba(0,0,0,0.1), -15px -15px 20px #fffb;
+}
+
+.sun-icon {
+  width: 100%;
+  fill: #fd7c4f;
+}
+
+.ray,
+.circle{
+  stroke: #fd7c4f;
+}
+
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  50%{
+    transform: rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.path {
+  stroke-dasharray: 30;
+  animation: dash 60s linear;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 1000;
+  }
+}
+
+
