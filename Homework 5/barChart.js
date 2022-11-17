@@ -1,5 +1,4 @@
-var barG, barScale, width, height, xAxis, svg1, callAxis;
-
+var barG, barScale, width, height, xAxis, svg1, callAxis, svg2;
 
 function drawAxis(domain, tickFormat){
     xAxis = d3.axisBottom(getScale(domain,[0, width - 40]))
@@ -23,9 +22,10 @@ function draw(axis, stroke_width, translate, cls) {
         .attr("class", cls);
 }
 
+// initializing the bar chart labels
 function initDrawChart(barData) {
     width = document.getElementById("mainBarChart").offsetWidth - 100;
-    height = 900;
+    height = 5000;
 
     let values = [42.5, 82.5, 85, 94, 80];
     let yAxisValues = []
@@ -53,6 +53,7 @@ function initDrawChart(barData) {
 
     barG = svg1.append("g");
 
+    // adding y axis labels
     let yLabels = svg1.append("g")
     yLabels.selectAll("text")
         .data(barData)
@@ -60,9 +61,9 @@ function initDrawChart(barData) {
             function (enter) {
                 return enter.append("text")
                     .attr("x", 20)
-                    .attr("y", (d, i) => (barScale(d.yLabel)))
+                    .attr("y", (d, i) => (barScale(d.yLabel) - 2))
                     .attr("class", "ylabel")
-                    .text(d => d.yLabel)
+                    .text(d => d.yLabel.replace("county", ""))
             }
         )
         .attr("transform", "translate(-17, 12)")
@@ -70,15 +71,16 @@ function initDrawChart(barData) {
     drawChart(barData, true);
 }
 
+// plotting the points on the screen and drawing the bar chart
 function drawChart(barData, flag) {
 
-    if(flag){
+    if(flag) {
         drawAxis([0, 12],  "M");
-        draw(xAxis, "2", "translate(49,710)", "xlabel");
+        draw(xAxis, "2", "translate(49,710)", "fixedDiv");
     }
-    else{
+    else {
         drawAxis([0, 18000],  "");
-        draw(xAxis, "2", "translate(49,710)", "xlabel");
+        draw(xAxis, "2", "translate(49,710)", "fixedDiv");
     }
 
     barG.selectAll("rect")
@@ -94,7 +96,7 @@ function drawChart(barData, flag) {
                         return ((width - 40) * d.value) / 1200000;
                     })
                     .attr("id", function (d) {
-                        return d.yLabel + "1";
+                        return d.yLabel.replace("county","") + "1";
                     })
             },
             function (update) {
@@ -112,7 +114,7 @@ function drawChart(barData, flag) {
                         }
                     })
                     .attr("id", function (d) {
-                        return d.yLabel + "1";
+                        return d.yLabel.replace("county","") + "1";
                     })
             },
             function (exit) {
@@ -122,15 +124,18 @@ function drawChart(barData, flag) {
         .on("mouseover", function (d, i) {
             d3.select(this).transition().duration(100).style("fill", "#FF731D").style("stroke", "black").style("stroke-width", "3");
             var tempValue = d.srcElement.__data__.yLabel;
-            d3.select("#" + tempValue)
-                .style("stroke", "white")
-                .style("stroke-width", 0.15)
+            console.log(tempValue)
+            d3.select("#" + tempValue.replace("county",""))
+                .style("stroke", "#3F0071")
+                .style("stroke-width", 5)
                 .style("cursor", "pointer")
+
         })
         .on("mouseout", function (d, i) {
             var tempValue = d.srcElement.__data__.yLabel;
             d3.select(this).transition().duration(100).style("fill", "#1e99e7").style("stroke", "#1e99e7");
-            d3.select("#" + tempValue)
-                .style("stroke-width", 0.025)
+            d3.select("#" + tempValue.replace("county",""))
+                .style("stroke-width", 1)
+                .style("stroke", "white")
         });
 }

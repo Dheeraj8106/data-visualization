@@ -21,18 +21,18 @@
 </head>
 <body>
 <div class="container-fluid">
-    <div>
         <div style="margin-left: 17rem"><h1><span id="NameId">KOTTE VENKATA SHIVA SAI DHEERAJ</span><span
                 style="font-size: 1.2rem">CS-6820 Homework 5, A02394047@usu.edu, A02394047.</span></h1>
         </div>
-    </div>
-    <div class="row" style="margin-top: 5rem;text-align: center">
+    <div class="row" style="margin-top: 3rem;text-align: center">
 
-        <div class="col col-lg-6 col-md-12" id="mainMapChart" style="border-right-style: dashed">
+        <!-- div for the map chart -->
+        <div class="col col-lg-6 col-md-12" id="mainMapChart" style="border-right-style: dashed;">
             <span class="headingName">Utah Unemployment Rate by County 2016</span>
         </div>
 
-        <div class="col col-lg-6 col-md-12" id="mainBarChart">
+        <!-- div for the bar chart-->
+        <div class="col col-lg-6 col-md-12">
             <span class="headingName" style="text-align: center">Utah Population by County 2016</span>
             <div class = "row" style="margin-top:3rem;">
                 <div class="col-6">
@@ -52,14 +52,34 @@
                     </div>
                 </div>
             </div>
-        </div>
+            <div id="mainBarChart" style= "height: 35rem; overflow-y: scroll;">
 
+            </div>
+        </div>
+<!--        <div class="x-axis"></div>-->
     </div>
 </div>
 <script>
+    let width1 = 700;
+    let height1 = 20;
+    let svg = d3.select(".x-axis").append("svg").attr("width", width1).attr("height",height1).style("display", "block").style("margin", "auto");
+
+    // add x-axis line
+    svg.append("line").attr("x1",400).attr("y1",height1).attr("x2",width1 + 200).attr("y2",height1).style("stroke","#aaa").style("stroke-width", "3");
+
+    // add x-axis text
+    let xlabels = ['1M', '2M', '3M', '4M', '5M', '6M', '7M', '8M', '9M', '10M', '11M', '12M'];
+    for(let idx = 0; idx < xlabels.length; idx+=1) {
+        svg.append("text").attr("x", 32 + ((idx * 1) * 85)).attr("y", height1).text(xlabels[idx]);
+    }
+
     fetchingData("population", true);
     function changeValue(option){
         preprocessing(option, false);
+    }
+
+    function callDblClick(){
+
     }
 </script>
 </body>

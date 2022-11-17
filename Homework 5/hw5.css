@@ -25,6 +25,11 @@ body {
     opacity: 0.5;
 }
 
+.fixedDiv {
+    position: absolute;
+    left: 300px;
+}
+
 .ylabel {
     font-size: 5.5pt;
     font-weight: bold;
@@ -40,7 +45,7 @@ body {
 }
 
 .map {
-    transform: translate(-3795.0188297448267px,-13939.583464627787px) scale(39.151717252068266);
+    /*transform:translate(-23066.44037705733px,-14134.94927207732px) scale(39.5074507749609);*/
 }
 
 .line {
