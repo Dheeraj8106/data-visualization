@@ -24,7 +24,7 @@ function draw(axis, stroke_width, translate, cls) {
 
 // initializing the bar chart labels
 function initDrawChart(barData) {
-    width = document.getElementById("mainBarChart").offsetWidth - 100;
+    width = document.getElementById("mainBarChart").offsetWidth - 90;
     height = 5000;
 
     let values = [42.5, 82.5, 85, 94, 80];

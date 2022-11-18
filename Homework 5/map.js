@@ -1,6 +1,6 @@
 function drawMap(world, populationData) {
     var width = document.getElementById("mainMapChart").offsetWidth,
-        height = 500;
+        height = document.getElementById("mainMapChart").offsetHeight - 150;
 
     var svg = d3.select("#mainMapChart")
         .append("svg")
@@ -69,7 +69,7 @@ function drawMap(world, populationData) {
         LegendScale.push(diff * (i + 1) + min);
 
     var colorScale = d3.scaleLinear()
-        .domain([0,20])
+        .domain([0,12])
         .range(["white", "#61764B"]);
 
     for(let idx = 0; idx < features.length;idx++){
@@ -83,14 +83,14 @@ function drawMap(world, populationData) {
 
     let legendaxis = d3.axisBottom(axisScale).tickFormat(x=>  x.toFixed(1) + "%");
 
-    let legend = svg.selectAll(".legend").data(colors).enter().append("g").attr("transform", "translate(760,810)")
+    let legend = svg.selectAll(".legend").data(colors).enter().append("g").attr("transform", `translate(${width/6},${height + 50})`)
 
     legend.append("rect").attr("width", legendWidth/colors.length).attr("height", legendHeight).style("fill", d=>d)
         .attr("x", (d,i)=> legendWidth/colors.length * i)
 
 
     svg.append("g").attr("class", "axis")
-        .attr("transform", "translate(0,0)")
+        .attr("transform", `translate(${width/6},${height + 70})`)
         .call(legendaxis);
 
 
